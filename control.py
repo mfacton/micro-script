@@ -3,7 +3,7 @@ import struct
 import time
 from enum import Enum
 
-from serial_manager import DataType, SerialManager, pack_data, unpack_data
+from tools.serial_manager import DataType, SerialManager, pack_data, unpack_data
 
 # manager = SerialManager("STM32 STLink", startswith=True, baud=921600)
 manager = SerialManager("slc-control", baud=921600)

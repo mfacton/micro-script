@@ -3,7 +3,7 @@ import struct
 import time
 from enum import Enum
 
-from serial_manager import SerialManager
+from tools.serial_manager import SerialManager
 
 manager = SerialManager("usb-can")
 

@@ -5,7 +5,7 @@ import tkinter as tk
 
 from PIL import Image, ImageTk
 
-from serial_manager import SerialManager
+from tools.serial_manager import SerialManager
 
 manager = SerialManager("STM32 STLink", startswith=True)
 angle = 0
