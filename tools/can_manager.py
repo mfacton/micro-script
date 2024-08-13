@@ -49,7 +49,7 @@ class CanManager:
         self.manager.write_bytes(bytes)
 
     def receive_frame(self):
-        header = struct.unpack("H", self.manager.read_bytes(2))
+        header = struct.unpack("H", self.manager.read_bytes(2))[0]
         id = header & 0x07FF
         dlc_idx = header >> 11
         data = self.manager.read_bytes(dlc_sizes[dlc_idx])

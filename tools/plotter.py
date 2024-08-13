@@ -35,48 +35,52 @@ class Plot:
 
     def __init__(
         self,
-        width=1024,
-        height=512,
-        data_length=9,
+        data_length,
+        min,
+        max,
+        width=600,
+        height=300,
         pixel_shift=1,
-        height_scale=1,
-        line_thickness=1,
+        line_thickness=2,
         background=PlotColors.BLACK,
         data_colors=list(PlotColors),
         title="Plot",
     ):
         self.data_length = data_length
-        self.pixel_shift = pixel_shift
-        self.line_thickness = line_thickness
-        self.height_scale = height_scale
+        self.min = min
+        self.max = max
         self.width = width
         self.height = height
+        self.pixel_shift = pixel_shift
+        self.line_thickness = line_thickness
         self.background = background
+        self.data_colors = data_colors
+        self.title = title
+
         self.canvas = np.full(
             (self.height, self.width + 1, 3), self.background.value, dtype=np.uint8
         )
         self.last_points = np.zeros((data_length,))
-        self.data_colors = data_colors
         self.first_plot = True
-        self.title = title
 
     def push(self, new_data):
         """Add next point to plot"""
         self.canvas[:, : -self.pixel_shift, :] = self.canvas[:, self.pixel_shift :, :]
         self.canvas[:, -self.pixel_shift :] = self.background.value
-        for s in range(self.data_length):
+        for i in range(self.data_length):
+            plot_y = (new_data[i]-self.min)*self.height/(self.max-self.min)
             if not self.first_plot:
                 cv2.line(
                     self.canvas,
-                    (self.width, self.height - int(new_data[s] * self.height_scale)),
+                    (self.width, int(self.height - plot_y)),
                     (
                         self.width - self.pixel_shift,
-                        self.height - int(self.last_points[s]),
+                        self.height - int(self.last_points[i]),
                     ),
-                    self.data_colors[s % len(self.data_colors)].value,
+                    self.data_colors[i % len(self.data_colors)].value,
                     self.line_thickness,
                 )
-            self.last_points[s] = new_data[s] * self.height_scale
+            self.last_points[i] = plot_y
 
         if self.first_plot:
             self.first_plot = False
