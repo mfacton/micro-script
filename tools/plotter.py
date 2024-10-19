@@ -38,9 +38,10 @@ class Plot:
         data_length,
         min,
         max,
-        width=600,
-        height=300,
-        pixel_shift=1,
+        width=1600,
+        height=800,
+        pixel_shift=2,
+        frame_skip=1,
         line_thickness=2,
         background=PlotColors.BLACK,
         data_colors=list(PlotColors),
@@ -52,6 +53,7 @@ class Plot:
         self.width = width
         self.height = height
         self.pixel_shift = pixel_shift
+        self.frame_skip = frame_skip
         self.line_thickness = line_thickness
         self.background = background
         self.data_colors = data_colors
@@ -62,6 +64,7 @@ class Plot:
         )
         self.last_points = np.zeros((data_length,))
         self.first_plot = True
+        self.frame_count = 0
 
     def push(self, new_data):
         """Add next point to plot"""
@@ -85,8 +88,15 @@ class Plot:
         if self.first_plot:
             self.first_plot = False
 
-        cv2.imshow(self.title, self.canvas)
-        cv2.waitKey(1)
+        if self.frame_count == 0:
+            cv2.imshow(self.title, self.canvas)
+            cv2.waitKey(1)
+        
+        self.frame_count += 1
+
+        if self.frame_count > self.frame_skip:
+            self.frame_count = 0
+
 
     def reset(self):
         """Resets the plot"""

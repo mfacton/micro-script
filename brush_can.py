@@ -1,36 +1,27 @@
-import math
 import struct
 import time
-from enum import Enum
 
-from tools.serial_manager import SerialManager
+from tools.can_manager import CAN_DLC, CanManager
+from tools.serial_manager import SerialManager, DataType, unpack_data, pack_data
 
-manager = SerialManager("usb-can")
+serial = SerialManager("usb-can")
+can = CanManager(serial)
 
+mdt = [DataType.UInt8, DataType.Float]
 
-class Commands(Enum):
-    CommandSetP = 0
-    CommandSetI = 1
-    CommandSetD = 2
+can.send_frame(69, pack_data(mdt, [0, 20]), CAN_DLC.Size5)
+time.sleep(0.01)
+can.send_frame(69, pack_data(mdt, [2, 0.02]), CAN_DLC.Size5)
+time.sleep(0.01)
+can.send_frame(69, pack_data(mdt, [1, 0000]), CAN_DLC.Size5)
 
+# can.send_frame(0, bytearray([1]), CAN_DLC.Size1)
 
-class DLC(Enum):
-    Size0 = 0
-    Size1 = 1
-    Size2 = 2
-    Size3 = 3
-    Size4 = 4
-    Size5 = 5
-    Size6 = 6
-    Size7 = 7
-    Size8 = 8
-    Size12 = 9
-    Size16 = 10
-    Size20 = 11
-    Size24 = 12
-    Size32 = 13
-    Size48 = 14
-    Size64 = 15
+#while True:
+#    can.send_frame(69, pack_data(mdt, [1, 8]), CAN_DLC.Size5)
+#    time.sleep(0.1)
+#    id, data, dlc_idx = can.receive_frame()
+#    print(id, data, dlc_idx)
 
 
 # 0  CommandSetP, //float
@@ -58,24 +49,24 @@ class DLC(Enum):
 # 18 CommandSendMode, //uint8_t
 
 
-dlc_sizes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 12, 16, 20, 24, 32, 48, 64]
+# dlc_sizes = [0, 1, 2, 3, 4, 5, 6, 7, 8, 12, 16, 20, 24, 32, 48, 64]
 
 
-def send_frame(id, data, dlc_idx):
-    header = dlc_idx << 11 | id
-    header_bytes = struct.pack("<H", header)
-    frame = bytearray()
-    frame.extend(header_bytes)
-    frame.extend(data)
-    manager.write_bytes(frame)
+# def send_frame(id, data, dlc_idx):
+#     header = dlc_idx << 11 | id
+#     header_bytes = struct.pack("<H", header)
+#     frame = bytearray()
+#     frame.extend(header_bytes)
+#     frame.extend(data)
+#     manager.write_bytes(frame)
 
 
-def receive_frame():
-    header = struct.unpack("<H", manager.read_bytes(2))[0]
-    id = header & 0x07FF
-    dlc_idx = header >> 11
-    data = manager.read_bytes(dlc_sizes[dlc_idx])
-    return id, data, dlc_idx
+# def receive_frame():
+#     header = struct.unpack("<H", manager.read_bytes(2))[0]
+#     id = header & 0x07FF
+#     dlc_idx = header >> 11
+#     data = manager.read_bytes(dlc_sizes[dlc_idx])
+#     return id, data, dlc_idx
 
 
 # # set mode PID
@@ -127,25 +118,25 @@ def receive_frame():
 ########### current test ################
 
 # set mode Manual
-data = bytearray([0])
-data.extend(struct.pack("b", 0))
-send_frame(10, data, DLC.Size2.value)
+# data = bytearray([0])
+# data.extend(struct.pack("b", 0))
+# send_frame(10, data, DLC.Size2.value)
 
 # set voltage
-data = bytearray([0])
-data.extend(struct.pack("b", 65))
-send_frame(7, data, DLC.Size2.value)
+# data = bytearray([0])
+# data.extend(struct.pack("b", 65))
+# send_frame(7, data, DLC.Size2.value)
 
 # set current
-send_frame(8, bytearray([0, 20]), DLC.Size2.value)
+# send_frame(8, bytearray([0, 20]), DLC.Size2.value)
 
 #  print current
-while True:
-    send_frame(14, bytearray([0]), DLC.Size1.value)
-    frame = receive_frame()
-    id, data, dlc_index = frame
-    print(struct.unpack("<h", data)[0])
-    time.sleep(0.1)
+# while True:
+#     send_frame(14, bytearray([0]), DLC.Size1.value)
+#     frame = receive_frame()
+#     id, data, dlc_index = frame
+#     print(struct.unpack("<h", data)[0])
+#     time.sleep(0.1)
 
 #######################
 

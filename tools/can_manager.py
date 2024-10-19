@@ -42,9 +42,9 @@ class CanManager:
     def __init__(self, manager) -> None:
         self.manager = manager
     
-    def send_frame(self, id, data, length):
-        header = length.value << 11 | id
-        bytes = struct.pack("H", header)
+    def send_frame(self, id, data, dlc):
+        header = dlc.value << 11 | id
+        bytes = bytearray(struct.pack("H", header))
         bytes.extend(data)
         self.manager.write_bytes(bytes)
 
