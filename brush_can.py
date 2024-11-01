@@ -7,21 +7,21 @@ from tools.serial_manager import SerialManager, DataType, unpack_data, pack_data
 serial = SerialManager("usb-can")
 can = CanManager(serial)
 
-mdt = [DataType.UInt8, DataType.Float]
+#mdt = [DataType.UInt8, DataType.Float]
 
-can.send_frame(69, pack_data(mdt, [0, 20]), CAN_DLC.Size5)
-time.sleep(0.01)
-can.send_frame(69, pack_data(mdt, [2, 0.02]), CAN_DLC.Size5)
-time.sleep(0.01)
-can.send_frame(69, pack_data(mdt, [1, 0000]), CAN_DLC.Size5)
+#can.send_frame(128, pack_data(mdt, [0, 20]), CAN_DLC.Size5)
+#time.sleep(1)
+#can.send_frame(128, pack_data(mdt, [2, 0.02]), CAN_DLC.Size5)
+#time.sleep(1)
+#can.send_frame(128, pack_data(mdt, [1, 0000]), CAN_DLC.Size5)
 
 # can.send_frame(0, bytearray([1]), CAN_DLC.Size1)
 
-#while True:
-#    can.send_frame(69, pack_data(mdt, [1, 8]), CAN_DLC.Size5)
-#    time.sleep(0.1)
-#    id, data, dlc_idx = can.receive_frame()
-#    print(id, data, dlc_idx)
+while True:
+    #can.send_frame(69, pack_data(mdt, [1, 8]), CAN_DLC.Size5)
+    time.sleep(0.1)
+    id, data, dlc_idx = can.receive_frame()
+    print(id, data, dlc_idx)
 
 
 # 0  CommandSetP, //float
